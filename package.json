@@ -1,0 +1,25 @@
+{
+  "name": "spider-man-3d-game",
+  "version": "1.0.0",
+  "description": "A 3D Spider-Man fighting game built with Three.js - runs in the browser",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve",
+    "build": "echo 'No build step required for browser game'"
+  },
+  "keywords": [
+    "spider-man",
+    "3d-game",
+    "three.js",
+    "fighting-game",
+    "browser-game",
+    "webgl"
+  ],
+  "author": "Rileye1",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.1.2"
+  }
+}
