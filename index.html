@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider-Man: No Way Home - 3D Fighting Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        #gameContainer {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 100;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .health-bar {
+            width: 300px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff6600);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .enemy-health-bar {
+            width: 300px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .enemy-health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00ff00);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ff0000;
+            font-size: 14px;
+            max-width: 400px;
+        }
+
+        #controls h3 {
+            color: #ff0000;
+            margin-bottom: 10px;
+        }
+
+        #controls p {
+            margin: 5px 0;
+            color: #ffff00;
+        }
+
+        #score {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ff0000;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            text-align: center;
+        }
+
+        #gameOverScreen h1 {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #ff0000;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        #gameOverScreen p {
+            font-size: 28px;
+            margin-bottom: 40px;
+            color: #ffff00;
+        }
+
+        #restartBtn {
+            padding: 15px 40px;
+            font-size: 24px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #restartBtn:hover {
+            background: #ff6600;
+        }
+
+        #wave {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #ffff00;
+            font-size: 18px;
+            color: #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="hud">
+            <div>Spider-Man Health</div>
+            <div class="health-bar">
+                <div class="health-fill" id="playerHealthFill"></div>
+            </div>
+        </div>
+
+        <div class="enemy-health-bar">
+            <div class="enemy-health-fill" id="enemyHealthFill"></div>
+        </div>
+
+        <div id="wave">
+            <span id="waveText">Wave: 1</span>
+        </div>
+
+        <div id="controls">
+            <h3>🕷️ Controls 🕷️</h3>
+            <p><strong>W/A/S/D</strong> - Move</p>
+            <p><strong>SPACE</strong> - Jump</p>
+            <p><strong>Q</strong> - Web Attack</p>
+            <p><strong>E</strong> - Punch</p>
+            <p><strong>R</strong> - Spin Attack</p>
+            <p><strong>Mouse</strong> - Rotate Camera</p>
+        </div>
+
+        <div id="score">
+            <div id="scoreText">Score: 0</div>
+            <div id="comboText">Combo: 0</div>
+        </div>
+
+        <div id="gameOverScreen">
+            <h1 id="gameOverTitle">GAME OVER</h1>
+            <p id="gameOverScore">Score: 0</p>
+            <button id="restartBtn">Restart Game</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/particles.js"></script>
+</body>
+</html>
